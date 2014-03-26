@@ -71,6 +71,39 @@ install: $(SCRIPTS)
 	  $(MSGFMT) -o $(DESTDIR)$(localedir)/$$lang/LC_MESSAGES/$$package.mo $$file; \
 	done
 
+uninstall:
+	# Locales - remove also the directories but only if they are empty
+	for file in po/*/*.po; do \
+	  package=$$(echo $$file | $(SED) -e 's#po/\([^/]\+\).*#\1#'); \
+	  lang=$$(echo $$file | $(SED) -e 's#.*/\([^/]\+\).po#\1#'); \
+	  rm -f $(DESTDIR)$(localedir)/$$lang/LC_MESSAGES/$$package.mo; \
+	  if [ -d "$(DESTDIR)$(localedir)/$$lang/LC_MESSAGES" ]; then \
+	    rmdir --ignore-fail-on-non-empty $(DESTDIR)$(localedir)/$$lang/LC_MESSAGES; \
+	  fi; \
+	  if [ -d "$(DESTDIR)$(localedir)/$$lang" ]; then \
+	    rmdir --ignore-fail-on-non-empty $(DESTDIR)$(localedir)/$$lang; \
+	  fi; \
+	done
+	# Man
+	for file in man/*.5; do rm -f $(DESTDIR)$(mandir)/man5/$$(echo $$file | $(SED) -e 's#man/\([^/]\+\).*#\1#'); done
+	for file in man/*.8; do rm -f $(DESTDIR)$(mandir)/man8/$$(echo $$file | $(SED) -e 's#man/\([^/]\+\).*#\1#'); done
+	# Libs
+	if [ -d "$(DESTDIR)$(libdir)/yaourt" ]; then rm $(DESTDIR)$(libdir)/yaourt -R; fi;
+	# Configuration
+	rm -f $(DESTDIR)$(completiondir)/yaourt;
+	rm -f $(DESTDIR)$(sysconfdir)/yaourtrc;
+	# Scripts
+	rm -f $(DESTDIR)$(bindir)/pacdiffviewer
+	rm -f $(DESTDIR)$(bindir)/yaourt
+	# Directories (delete only if empty)
+	if [ -d "$(DESTDIR)$(mandir)/man5" ]; then rmdir --ignore-fail-on-non-empty $(DESTDIR)$(mandir)/man5; fi;
+	if [ -d "$(DESTDIR)$(mandir)/man8" ]; then rmdir --ignore-fail-on-non-empty $(DESTDIR)$(mandir)/man8; fi;
+	if [ -d "$(DESTDIR)$(completiondir)" ]; then rmdir --ignore-fail-on-non-empty $(DESTDIR)$(completiondir); fi;
+	if [ -d "$(DESTDIR)$(sysconfdir)" ]; then rmdir --ignore-fail-on-non-empty $(DESTDIR)$(sysconfdir); fi;
+	if [ -d "$(DESTDIR)$(libdir)/yaourt" ]; then rmdir --ignore-fail-on-non-empty $(DESTDIR)$(libdir)/yaourt; fi;
+	if [ -d "$(DESTDIR)$(libdir)" ]; then rmdir --ignore-fail-on-non-empty $(DESTDIR)$(libdir); fi;
+	if [ -d "$(DESTDIR)$(bindir)" ]; then rmdir --ignore-fail-on-non-empty $(DESTDIR)$(bindir); fi;
+
 dist:
 	mkdir yaourt-$(VERSION) 
 	cp -a AUTHORS INSTALL COPYING Makefile pacdiffviewer.sh.in yaourt.sh.in yaourtrc.in \
