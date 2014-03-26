@@ -2,14 +2,14 @@
 
 VERSION       = $(shell git describe --abbrev=4)
 DESTDIR       =
-PREFIX        = /usr/local
+PREFIX        = /usr
 SHELL         = /bin/bash
 INSTALL       = /usr/bin/env install 
 MSGFMT        = /usr/bin/msgfmt
 SED           = /bin/sed
 bindir        = $(PREFIX)/bin
 libdir        = $(PREFIX)/lib
-sysconfdir    = $(PREFIX)/etc
+sysconfdir    = /etc
 completiondir = ${PREFIX}/share/bash-completion/completions
 localedir     = $(PREFIX)/share/locale
 localstatedir = $(PREFIX)/var
